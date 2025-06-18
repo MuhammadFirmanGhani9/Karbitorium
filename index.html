@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karbitorium</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            background: linear-gradient(-45deg, #000000, #FFFFFF, #000000);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+        }
+
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            /* Removed 'display: flex;' from here */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 40px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen items-center justify-between text-white p-4">
+
+    <header class="w-full flex justify-between items-start mb-8">
+        <div class="text-left">
+            <h1 class="text-5xl font-bold">Karbitorium</h1>
+            <p class="text-sm mt-2">By Firghan</p>
+        </div>
+        <div class="flex flex-col items-end space-y-2">
+            <button id="questionButton" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded">
+                Kok tampilan webnya gini sih
+            </button>
+            <button id="programmerButton" class="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded">
+                Parani Programmer Web Ini
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center w-full">
+        <div class="liquid-glass p-8 md:p-12 rounded-lg shadow-lg w-full max-w-md">
+            <div class="mb-6">
+                <label for="name" class="block text-white text-lg font-bold mb-2">Name:</label>
+                <input type="text" id="name" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Your Name">
+            </div>
+            <div class="mb-6">
+                <label for="waifuName" class="block text-white text-lg font-bold mb-2">Waifu Name(s):</label>
+                <input type="text" id="waifuName" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., Rem, Emilia, Aqua">
+                <p class="text-sm mt-1 text-gray-200">Jika ada lebih dari 1 Waifu, tulis nama mereka dengan dipisahkan oleh tanda koma.</p>
+            </div>
+            <button id="checkButton" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline w-full mb-4">
+                Cek seberapa karbitkah diri anda
+            </button>
+            <button id="resetButton" class="bg-gray-600 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline w-full">
+                Reset
+            </button>
+        </div>
+    </main>
+
+    <footer class="text-center mt-8 text-gray-300">
+        <p>&copy; 2025</p>
+    </footer>
+
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2 id="modalResult" class="text-3xl font-bold text-gray-800 mb-4"></h2>
+            <p id="modalMessage" class="text-xl text-gray-700"></p>
+        </div>
+    </div>
+
+    <script>
+        const checkButton = document.getElementById('checkButton');
+        const resetButton = document.getElementById('resetButton');
+        const nameInput = document.getElementById('name');
+        const waifuNameInput = document.getElementById('waifuName');
+        const resultModal = document.getElementById('resultModal');
+        const modalResult = document.getElementById('modalResult');
+        const modalMessage = document.getElementById('modalMessage');
+        const questionButton = document.getElementById('questionButton');
+        const programmerButton = document.getElementById('programmerButton');
+
+        let currentResult = ''; // To store the result once determined
+
+        checkButton.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            const waifuNames = waifuNameInput.value.trim();
+
+            if (name === '' || waifuNames === '') {
+                // No alert here, just prevent further execution if inputs are empty
+                return;
+            }
+
+            if (currentResult === '') { // Only determine result if not already set
+                const waifuArray = waifuNames.split(',').map(name => name.trim()).filter(name => name !== '');
+
+                if (waifuArray.length > 1) {
+                    currentResult = 'KARBIT';
+                } else {
+                    const randomNumber = Math.random();
+                    currentResult = randomNumber < 0.5 ? 'SETIA' : 'KARBIT';
+                }
+            }
+
+            modalResult.textContent = `Anda dinyatakan ${currentResult}`;
+            modalResult.className = `text-3xl font-bold mb-4 ${currentResult === 'SETIA' ? 'text-green-600' : 'text-red-600'}`;
+            modalMessage.textContent = currentResult === 'SETIA' ? 'Selamat! Anda adalah seorang yang setia.' : 'Sayang sekali, Anda terdeteksi sebagai Karbit.';
+            resultModal.style.display = 'flex'; // Show the modal
+        });
+
+        resetButton.addEventListener('click', () => {
+            nameInput.value = '';
+            waifuNameInput.value = '';
+            currentResult = ''; // Reset the stored result
+            closeModal(); // Close the modal if it's open
+        });
+
+        questionButton.addEventListener('click', () => {
+            modalResult.textContent = 'Terserah gw njir, website gw juga, SYBAU 🥀🥀🥀';
+            modalResult.className = 'text-3xl font-bold mb-4 text-gray-800'; // Reset color to default
+            modalMessage.textContent = ''; // Clear any previous message
+            resultModal.style.display = 'flex'; // Show the modal
+        });
+
+        programmerButton.addEventListener('click', () => {
+            window.location.href = 'https://www.instagram.com/firghan.png/?hl=en';
+        });
+
+        function closeModal() {
+            resultModal.style.display = 'none';
+        }
+
+        // Close the modal if the user clicks anywhere outside of the modal content
+        window.onclick = function(event) {
+            if (event.target == resultModal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
